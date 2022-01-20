@@ -387,7 +387,9 @@ if (!GEN25) {
         ushort value[32];
     } Pedal[4] <bgcolor=cGreen>;
 
-    ushort MX_Sig[64] <bgcolor=cDkGreen>;
+    struct {
+        ubyte value[16];
+    } Effects_to_Samples[Profiles] <bgcolor=cDkGreen>;
 /*
     struct {
         short value[Points_per_Sample];
