@@ -3,7 +3,7 @@
 //
 //      File: FL_xx__x.odx.FD_2DATA.BIN
 //   Authors: Jille, Dark
-//   Version: 0.9
+//   Version: 0.9.1
 //   Purpose: Parse the contents of the MQB soundaktor firmware
 //  Category: 
 // File Mask: 
@@ -16,7 +16,9 @@
 //            0.5 - Transposed some tables to be viewed in the right way
 //            0.6 - Added Lib_Sig (whatever it may be.. noise signature?)
 //            0.7 - template code cleanup, started GEN2.5 parsing
+//            0.8 - Checksum mechanism included
 //            0.9 - GEN2 finished, GEN2.5 work in progress
+//            0.9.1 - several more table params for GEN2.5
 //------------------------------------------------
 // legend: 
 // yellow/aqua = uncertain
@@ -24,7 +26,7 @@
 // green       = confirmed
 // gray        = seemingly irrelevant
 // blue        = special
-// purple      = potential checksum
+// purple      = checksum
 
 // LOCAL VARIABLES
 
@@ -150,25 +152,36 @@ ushort AccelFunctions <bgcolor=cLtGreen>; // acceleration / G-meter / LIB_m_Gain
 ushort SpeedFunctions <bgcolor=cLtBlue>; // speed / LIB_v_Gain_height
 
 if (GEN25) {
-    ushort PedalFunctions <bgcolor=cLtBlue>;
+    ushort PedalFunctions <bgcolor=cLtGreen>;
+    ushort unknown_9 <bgcolor=cLtYellow>;
+    ushort unknown_10 <bgcolor=cAqua>;
+    ushort unknown_11 <bgcolor=cLtYellow>;
+    ushort unknown_12 <bgcolor=cAqua>;
 } else {
-
     ushort Revolutions_length <bgcolor=cLtGreen>;
     ushort Acceleration_length <bgcolor=cLtBlue>;
     ushort Speed_length <bgcolor=cLtGreen>;
     ushort Acceleration_Table_size <bgcolor=cLtBlue>; // size of LIB_m_Gain table in bytes, 512
     ushort Revolutions_Table_size <bgcolor=cLtGreen>; // size of LIB_n_Gain table in bytes, 8192
-    ushort Profiles_2 <bgcolor=cLtBlue>;
-    ushort Effects_2 <bgcolor=cLtGreen>; 
-    ushort RevsFunctions_2 <bgcolor=cLtBlue>; 
-    ushort AccelFunctions_2 <bgcolor=cLtBlue>; 
-    ushort SpeedFunctions_2 <bgcolor=cLtBlue>;
+}
+
+ushort Profiles_2 <bgcolor=cLtBlue>;
+ushort Effects_2 <bgcolor=cLtGreen>;
+ushort RevsFunctions_2 <bgcolor=cLtBlue>;
+ushort AccelFunctions_2 <bgcolor=cLtGreen>;
+ushort SpeedFunctions_2 <bgcolor=cLtBlue>;
+
+if (GEN25) {
+    ushort PedalFunctions_2 <bgcolor=cAqua>;
+    ushort unknown_19 <bgcolor=cLtYellow>;
+} else {
     // the following 2 values are linked to SampleRate 
     // Depending on the value there, the values here are different.
     ushort Samples_count <bgcolor=cLtGreen>; // LIB_Sig
-    ushort Sample_length <bgcolor=cGreen>;   // LIB_Sig
-    ushort Damping_factor <bgcolor=cLtBlue>; // Range 0-65535 
+    ushort Sample_length <bgcolor=cLtBlue>;   // LIB_Sig
+    ushort Damping_factor <bgcolor=cLtGreen>; // Range 0-65535 
 }
+
 // Offset where the filename starts.
 FSeek(62);
 ushort source_filename_checksum <bgcolor=cPurple>;// CRC16-CCITT
@@ -182,23 +195,23 @@ ushort RevsFunctions_3 <bgcolor=cLtGreen>;
 ushort AccelFunctions_3 <bgcolor=cLtBlue>; 
 ushort SpeedFunctions_3 <bgcolor=cLtGreen>;
 if (!GEN25) {
-    ushort Samples_Count_2 <bgcolor=cLtBlue>; 
+    ushort Samples_count_2 <bgcolor=cLtBlue>; 
     ushort Sample_Rate <bgcolor=cLtGreen, read=getSampleRate>;
     ushort Damping_factor_2 <bgcolor=cLtBlue>; // 0 <= DF <= 1 Quantization 0-65535
     // they refer to it as initial speed value in GEN2 ???? (always set to 0!)
     ushort unknown_18 <bgcolor=cDkYellow>; 
 } else {
-    ushort PedalFunctions_2 <bgcolor=cLtBlue>; 
-    ushort unknown_19 <bgcolor=cYellow>;
-    ushort unknown_20 <bgcolor=cDkYellow>;
-    ushort unknown_21 <bgcolor=cYellow>;
-    ushort unknown_22 <bgcolor=cDkYellow>;
-    ushort unknown_23 <bgcolor=cYellow>;
-    ushort unknown_24 <bgcolor=cDkYellow>;
-    ushort unknown_25 <bgcolor=cYellow>;
-    ushort unknown_26 <bgcolor=cDkYellow>;
-    ushort unknown_27 <bgcolor=cYellow>;
-    ushort unknown_28 <bgcolor=cDkYellow>;
+    ushort PedalFunctions_3 <bgcolor=cLtBlue>; 
+    ushort unknown_20 <bgcolor=cLtYellow>;
+    ushort unknown_21 <bgcolor=cAqua>;
+    ushort unknown_22 <bgcolor=cLtYellow>;
+    ushort unknown_23 <bgcolor=cAqua>;
+    ushort unknown_24 <bgcolor=cLtYellow>;
+    ushort unknown_25 <bgcolor=cAqua>;
+    ushort unknown_26 <bgcolor=cLtYellow>;
+    ushort unknown_27 <bgcolor=cAqua>;
+    ushort unknown_28 <bgcolor=cLtYellow>;
+    ushort unknown_29 <bgcolor=cAqua>;
 }
 
 Printf("%s \n\n", source_filename);
@@ -281,7 +294,7 @@ if (!GEN25) {
     struct {
         ushort gain[8];
         ushort clip[8];
-    } SUM_Gain_Clip <bgcolor=cDkGreen>;
+    } Effects_to_Samples <bgcolor=cDkGreen>;
 
     ushort Acceleration_Scale[Acceleration_length] <bgcolor=cGreen>; // values in [-0.3 - 0.98] range (5F 0003 fw) / [-0.4 - 1.00] range (565 AGA fw)
     ushort Revolutions_Scale[Revolutions_length] <bgcolor=cDkGreen>; // values in [500 - 8150] (rpm) range quanified by 16256
@@ -341,7 +354,7 @@ if (!GEN25) {
     
     struct {
         ubyte unknown[48];
-    } MX_Profile[Profiles] <bgcolor=cDkYellow, optimize=true>;
+    } MX_Profile[Profiles] <bgcolor=cDkAqua, optimize=true>;
 
     struct {
         ushort value[14]; // there is NO any param with such a value and sometimes its dynamic and not 14
