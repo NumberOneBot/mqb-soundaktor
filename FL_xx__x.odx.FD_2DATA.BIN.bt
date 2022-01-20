@@ -2,8 +2,8 @@
 //--- 010 Editor v12.0 Binary Template
 //
 //      File: FL_xx__x.odx.FD_2DATA.BIN
-//   Authors: Jille, Dark, Borg123
-//   Version: 0.6
+//   Authors: Jille, Dark
+//   Version: 0.9
 //   Purpose: Parse the contents of the MQB soundaktor firmware
 //  Category: 
 // File Mask: 
@@ -181,30 +181,24 @@ if (GEN25) {
 ushort RevsFunctions_3 <bgcolor=cLtGreen>;
 ushort AccelFunctions_3 <bgcolor=cLtBlue>; 
 ushort SpeedFunctions_3 <bgcolor=cLtGreen>;
-if (GEN25) {
-    ushort PedalFunctions_2 <bgcolor=cLtGreen>; 
-}
-ushort Samples_Count_2 <bgcolor=cLtBlue>; 
-
-if (GEN25) {
-    ushort Sample_length <bgcolor=cLtGreen>;
-} else {
+if (!GEN25) {
+    ushort Samples_Count_2 <bgcolor=cLtBlue>; 
     ushort Sample_Rate <bgcolor=cLtGreen, read=getSampleRate>;
-}
-
-ushort Damping_factor_2 <bgcolor=cLtBlue>; // 0 <= DF <= 1 Quantization 0-65535
-ushort unknown_18 <bgcolor=cDkYellow>; 
-// they refer to it as initial speed value in GEN2 ???? (always set to 0!)
-// should be platform value in GEN2.5
-// 1: MQB platform
-// 2: MLBevo platform
-if (GEN25) {
+    ushort Damping_factor_2 <bgcolor=cLtBlue>; // 0 <= DF <= 1 Quantization 0-65535
+    // they refer to it as initial speed value in GEN2 ???? (always set to 0!)
+    ushort unknown_18 <bgcolor=cDkYellow>; 
+} else {
+    ushort PedalFunctions_2 <bgcolor=cLtBlue>; 
     ushort unknown_19 <bgcolor=cYellow>;
     ushort unknown_20 <bgcolor=cDkYellow>;
     ushort unknown_21 <bgcolor=cYellow>;
     ushort unknown_22 <bgcolor=cDkYellow>;
     ushort unknown_23 <bgcolor=cYellow>;
     ushort unknown_24 <bgcolor=cDkYellow>;
+    ushort unknown_25 <bgcolor=cYellow>;
+    ushort unknown_26 <bgcolor=cDkYellow>;
+    ushort unknown_27 <bgcolor=cYellow>;
+    ushort unknown_28 <bgcolor=cDkYellow>;
 }
 
 Printf("%s \n\n", source_filename);
