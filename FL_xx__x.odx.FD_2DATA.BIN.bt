@@ -120,10 +120,17 @@ byte unknown_2 <bgcolor=cDkYellow>;
 byte Gain_table_flag <bgcolor=cYellow>;
 
 ushort DEFAULTS_Profiles <bgcolor=cDkAqua>; 
-ushort DEFAULTS_Effects <bgcolor=cAqua>; 
+if (!GEN25) {
+    ushort DEFAULTS_Effects <bgcolor=cAqua>; 
+} else {
+    local int DEFAULTS_Effects = 16;
+}
 ushort DEFAULTS_RevsFunctions <bgcolor=cDkAqua>;  // engine revolutions     / LIB_n_Gain
 ushort DEFAULTS_AccelFunctions <bgcolor=cAqua>;   // acceleration / G-meter / LIB_m_Gain
 ushort DEFAULTS_SpeedFunctions <bgcolor=cDkAqua>; // speed                  / LIB_v_Gain
+if (GEN25) {
+    ushort DEFAULTS_PedalFunctions <bgcolor=cAqua>; // pedal                / LIB_p_Gain
+}
 
 if (GEN25) {
     ushort unknown_8 <bgcolor=cYellow>;
@@ -140,10 +147,15 @@ if (GEN25) {
 }
 
 ushort DEFAULTS_Profiles_2 <bgcolor=cDkAqua>;
-ushort DEFAULTS_Effects_2 <bgcolor=cAqua>;
+if (!GEN25) {
+    ushort DEFAULTS_Effects_2 <bgcolor=cAqua>;
+}
 ushort DEFAULTS_RevsFunctions_2 <bgcolor=cDkAqua>;
 ushort DEFAULTS_AccelFunctions_2 <bgcolor=cAqua>;
 ushort DEFAULTS_SpeedFunctions_2 <bgcolor=cDkAqua>;
+if (GEN25) {
+    ushort DEFAULTS_PedalFunctions_2 <bgcolor=cAqua>;
+}
 
 if (GEN25) {
     ushort DEFAULTS_Samples_count <bgcolor=cYellow>;
