@@ -295,7 +295,7 @@ if (!GEN25) {
     } Samples[Samples_count] <bgcolor=cDkAqua, optimize=true>; 
         
     // Print a report to output 
-    Printf("ID\tEngine\tVIN\t\tRelapseKl15\tGearbox\tDefault\tReverse\tComfort\tNormal\tSport\tOffroad\tEco\tRace\tGTE\tHighPass\tRFU2\tRFU3\t\n");
+    Printf("ID\tEngine\tVIN\t\tRelapseKl15\tGearbox\tDefault\tReverse\tComfort(1)\tNormal(2)\tSport(3)\tOffroad(4)\tEco(5)\tRace(6)\tHybrid(8)\tHighPass\tRFU2\tRFU3\t\n");
     for( i = 0; i < Profiles; i++ ) {
         Printf("%i\t%02X\t%s\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%s\t%i\t%i\n", 
             i+1, 
@@ -336,7 +336,7 @@ if (!GEN25) {
         char Drivetrain <bgcolor=cDkGreen>;
         char FPA_installed <bgcolor=cGreen>;   
         ubyte unknown_25 <bgcolor=cDkYellow>;
-        ubyte FPA_id <bgcolor=cDkGreen>;
+        ubyte unknown_26 <bgcolor=cYellow>;
     } Car[Profiles];  
     
     // local int MXP_y = 32;
@@ -402,7 +402,7 @@ if (!GEN25) {
 
     // Print a report to output 
     Printf("CAR\n");
-    Printf("ID\tPower kW\tunknown_2\tEngine\tVIN\t\tTransmissn\tBody Type\tDrivetrain\tFPA Flag\tunknown_25\tProfile ID\n");
+    Printf("ID\tPower kW\tunknown_2\tEngine\tVIN\t\tTransmissn\tBody Type\tDrivetrain\tFPA Flag\tunknown_25\tunknown_26\n");
     for( i = 0; i < Profiles; i++ ) {
         Printf("%i\t%i\t%i\t%02X\t%s\t%s\t%s\t%s\t%s\t%i\t%i\n", 
             i + 1, 
@@ -415,7 +415,7 @@ if (!GEN25) {
             Car[i].Drivetrain,
             (Car[i].FPA_installed == 'J' ? "Yes" : Car[i].FPA_installed == 'N' ? "No" : "Any"),
             Car[i].unknown_25,
-            Car[i].FPA_id
+            Car[i].unknown_26
         );
     } 	
 }
@@ -454,14 +454,14 @@ if (GEN25) {
     i = 0;
 
     Printf("\nMX_Profile\n");
-    Printf("ID\tbyte_1\t");
+    Printf("ID\t  byte_1\t");
     if (schema_type_byte_position == 4) {
-        Printf("byte_2\t");
-        Printf("byte_3\t");
+        Printf("  byte_2\t");
+        Printf("  byte_3\t");
     }
     Printf("Schemas\t");
-    Printf("Schema 1\t\t\t\t");
-    Printf("Schema 2\t\t\t\t");
+    Printf("  Comfort(1)\t  Normal(2)\t  Sport(3)\t  Offroad(4)\t  Eco(5)\t  Race(6)\t  Hybrid(8)\t \t");
+    Printf("  Comfort(1)\t  Normal(2)\t  Sport(3)\t  Offroad(4)\t  Eco(5)\t  Race(6)\t  Hybrid(8)\t ");
     Printf("\n");
 
     do {
@@ -483,7 +483,7 @@ if (GEN25) {
             }
         } else {
             if ( j < schema_type_byte_position ) {
-                Printf("[ %02i   %02i ]\t", get1HalfByte(MX_Profile[i]), get2HalfByte(MX_Profile[i]) );            
+                Printf("( %02i  %02i ) \t", get1HalfByte(MX_Profile[i]), get2HalfByte(MX_Profile[i]) );            
             } else {
                 if ( j == schema_type_byte_position + 1 || 
                      j == schema_type_byte_position + 5 
@@ -493,9 +493,9 @@ if (GEN25) {
                 if ( j == schema_type_byte_position + 4 || 
                      j == schema_type_byte_position + 8 
                 ) {
-                    Printf("%02i ]   \t", get1HalfByte(MX_Profile[i]) + 1); // skip 8th unused half-byte            
+                    Printf("%i\t]\t", get1HalfByte(MX_Profile[i]) + 1); // skip 8th unused half-byte            
                 } else {
-                    Printf("%02i   %02i   ", get1HalfByte(MX_Profile[i]) + 1, get2HalfByte(MX_Profile[i]) + 1);            
+                    Printf("%i\t  %i\t  ", get1HalfByte(MX_Profile[i]) + 1, get2HalfByte(MX_Profile[i]) + 1);            
                 }                
 
             }
@@ -536,7 +536,7 @@ if (GEN25) {
     // WORK IN PROGRESS
     // WORK IN PROGRESS
 }
-
+/*
 PrintHeader("Gain_Effect (ST/TS_Gain)");
 for ( j = 0; j < DEFAULTS_Effects; j++ ) {
     for( i = 0; i < Profiles; i++ ) {
