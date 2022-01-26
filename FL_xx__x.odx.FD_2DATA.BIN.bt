@@ -3,7 +3,7 @@
 //
 //      File: FL_xx__x.odx.FD_2DATA.BIN
 //   Authors: Jille, Dark
-//   Version: 0.9.1
+//   Version: 0.9.9
 //   Purpose: Parse the contents of the MQB soundaktor firmware
 //  Category: 
 // File Mask: 
@@ -20,6 +20,7 @@
 //            0.9 - GEN2 finished, GEN2.5 work in progress
 //            0.9.1 - several more table params for GEN2.5
 //            0.9.8 - parsed and printed everything except SUM_DATA and MX_PROFILE
+//            0.9.9 - MX_Profile parsed
 //------------------------------------------------
 // legend: 
 // yellow/aqua = uncertain
@@ -32,11 +33,9 @@
 
 local int i = 0;
 local int j = 0;
-local int k = 0;
 local float x = 0;
 local int factor = 0;
 local string format = "";
-local int checksum = -1;
 local int start = 0x02;
 local int end = 0xE000;
 local string output = "";
@@ -130,10 +129,7 @@ ushort DEFAULTS_AccelFunctions <bgcolor=cAqua>;   // acceleration / G-meter / LI
 ushort DEFAULTS_SpeedFunctions <bgcolor=cDkAqua>; // speed                  / LIB_v_Gain
 if (GEN25) {
     ushort DEFAULTS_PedalFunctions <bgcolor=cAqua>; // pedal                / LIB_p_Gain
-}
-
-if (GEN25) {
-    ushort unknown_8 <bgcolor=cYellow>;
+    ushort DEFAULTS_Samples_count <bgcolor=cYellow>;
     ushort unknown_9 <bgcolor=cDkYellow>;
     ushort unknown_10 <bgcolor=cYellow>;
     ushort unknown_11 <bgcolor=cDkYellow>;
@@ -155,10 +151,7 @@ ushort DEFAULTS_AccelFunctions_2 <bgcolor=cAqua>;
 ushort DEFAULTS_SpeedFunctions_2 <bgcolor=cDkAqua>;
 if (GEN25) {
     ushort DEFAULTS_PedalFunctions_2 <bgcolor=cAqua>;
-}
-
-if (GEN25) {
-    ushort DEFAULTS_Samples_count <bgcolor=cYellow>;
+    ushort DEFAULTS_Samples_count_2 <bgcolor=cYellow>;
     ushort DEFAULTS_Sample_Rate <bgcolor=cDkYellow, read=getSampleRate>;
     ushort unknown_14 <bgcolor=cYellow>;
     ushort unknown_15 <bgcolor=cDkYellow>;
@@ -281,9 +274,9 @@ if (!GEN25) {
             byte value[DEFAULTS_Effects];
         } Effects_to_Profiles[Profiles] <bgcolor=cGreen, optimize=true>;
     }
-    struct {
-        ushort gain[Samples_count];
-        ushort clip[Samples_count];
+    struct { // MX_Sig
+        ushort gain[Profiles];
+        ushort clip[Profiles];
     } Effects_to_Samples <bgcolor=cDkGreen>;
     ushort Acceleration_Scale[DEFAULTS_Acceleration_length] <bgcolor=cGreen>; // values in [-0.3 - 0.98] range (5F 0003 fw) / [-0.4 - 1.00] range (565 AGA fw)
     ushort Revolutions_Scale[DEFAULTS_Revolutions_length] <bgcolor=cDkGreen>; // values in [500 - 8150] (rpm) range quanified by 16256
@@ -346,13 +339,20 @@ if (!GEN25) {
         ubyte FPA_id <bgcolor=cDkGreen>;
     } Car[Profiles];  
     
-    struct {
-        ubyte unknown[48];
-    } MX_Profile[Profiles] <bgcolor=cDkAqua, optimize=true>;
+    // local int MXP_y = 32;
+    // local int MXP_x = 12;
+    local int SUM_x = 14; // 19
+    if (Gain_table_flag == 3) {
+        SUM_x = 19;
+    }
 
+    // struct {
+    //     ubyte unknown[MXP_x];
+    // } 
+    ubyte MX_Profile[384] <bgcolor=cDkAqua, optimize=true>;
     struct {
-        ushort value[14]; // there is NO parameter with such a value and sometimes it is 19 !!!! 
-    } SUM_data[Profiles] <bgcolor=cAqua>;
+        ushort value[SUM_x]; // there is NO parameter with such a value and sometimes it is 19 !!!! 
+    } SUM_data[Profiles] <bgcolor=cAqua, optimize=true>;
     struct {
         ushort value[DEFAULTS_Effects];
     } Gain_Effect[Profiles] <bgcolor=cDkGreen, optimize=true>;
@@ -402,7 +402,7 @@ if (!GEN25) {
 
     // Print a report to output 
     Printf("CAR\n");
-    Printf("ID\tPower kW\tunknown_2\tEngine\tVIN\t\tTransmissn\tBody Type\tDrivetrain\tFPA Flag\tunknown_25\tFPA ID\n");
+    Printf("ID\tPower kW\tunknown_2\tEngine\tVIN\t\tTransmissn\tBody Type\tDrivetrain\tFPA Flag\tunknown_25\tProfile ID\n");
     for( i = 0; i < Profiles; i++ ) {
         Printf("%i\t%i\t%i\t%02X\t%s\t%s\t%s\t%s\t%s\t%i\t%i\n", 
             i + 1, 
@@ -430,39 +430,105 @@ void PrintHeader( char name[] ) {
     }
 }
 
+ubyte get2HalfByte(ubyte source) {
+    return source >> 4;
+} 
+
+ubyte get1HalfByte(ubyte source) {
+    return source & 0x0F;
+} 
+
+
+
 // SHORT spreadsheets 8x12(16)
 if (GEN25) {
     // WORK IN PROGRESS
     // WORK IN PROGRESS
     // WORK IN PROGRESS
+    
+    local int schema_type_byte_position = (Gain_table_flag == 3 ? 4 : 2);
+    local int original_line_length = schema_type_byte_position + 4;
+    local int current_line_length = original_line_length;
+    local int line_counter = 0;
+    j = 0;
+    i = 0;
+
+    Printf("\nMX_Profile\n");
+    Printf("ID\tbyte_1\t");
+    if (schema_type_byte_position == 4) {
+        Printf("byte_2\t");
+        Printf("byte_3\t");
+    }
+    Printf("Schemas\t");
+    Printf("Schema 1\t\t\t\t");
+    Printf("Schema 2\t\t\t\t");
+    Printf("\n");
+
+    do {
+        if (j == 0) {
+            Printf("%i\t", line_counter+1);
+        }
+        j++;
+        if (j == schema_type_byte_position && MX_Profile[i] > 0) {
+            current_line_length +=4;    
+        }
+
+        if ( j == schema_type_byte_position ) {
+            if (MX_Profile[i] == 0) {
+                Printf("B\t");
+            } else if (MX_Profile[i] == 8) {
+                Printf("BK\t");
+            } else {
+                Printf("(%i) unknown\t", MX_Profile[i]);
+            }
+        } else {
+            if ( j < schema_type_byte_position ) {
+                Printf("[ %02i   %02i ]\t", get1HalfByte(MX_Profile[i]), get2HalfByte(MX_Profile[i]) );            
+            } else {
+                if ( j == schema_type_byte_position + 1 || 
+                     j == schema_type_byte_position + 5 
+                ) {
+                    Printf("[ ");        
+                }
+                if ( j == schema_type_byte_position + 4 || 
+                     j == schema_type_byte_position + 8 
+                ) {
+                    Printf("%02i ]   \t", get1HalfByte(MX_Profile[i]) + 1); // skip 8th unused half-byte            
+                } else {
+                    Printf("%02i   %02i   ", get1HalfByte(MX_Profile[i]) + 1, get2HalfByte(MX_Profile[i]) + 1);            
+                }                
+
+            }
+        }
+
+        if (j == current_line_length) {
+            Printf("\n");
+            line_counter++;
+            j = 0;
+            current_line_length = original_line_length;    
+        }
+        i++;
+    } while (line_counter < 8);
+
+    // WORK IN PROGRESS
+    // WORK IN PROGRESS
+    // WORK IN PROGRESS
     Printf("\nSUM_data\n");
-    for ( j = 0; j < 14; j++ ) {
+    for ( j = 0; j < SUM_x; j++ ) {
         for( i = 0; i < Profiles; i++ ) {
-            /*
-            if (j == 0) {
-                Printf("%s\t", getSumEffect(SUM_data[i].value[j]) );
-            } else if (j == 1) {
-                x = (float) SUM_data[i].value[j] / 65536 * getIntegerSampleRate(Sample_Rate) / 4 + 1;
-                Printf("%.3g\t", x);
-            } else if (j > 1 && j < 10) {
-                x = (float) SUM_data[i].value[j];
-                Printf("%g\t", x);
-            } else if (j == 10) {
-                x = (float) SUM_data[i].value[j] / 65536 - 1;
-                Printf("%i\t", x);
-            } else if (j == 11) {
+            if (j == SUM_x-3) {
                 x = (float) SUM_data[i].value[j] / 65536;
                 Printf("%.2g\t", x);
-            } else if (j == 12) {
+            } else if (j == SUM_x-2) {
                 x = (float) SUM_data[i].value[j] / 2048 * 16;
                 Printf("%.2g\t", x);
-            } else if (j == 13) {
+            } else if (j == SUM_x-1) {
                 x = (float) SUM_data[i].value[j] / 2048 * 8;
                 Printf("%.2g\t", x);
-            } else { */
-                x = (float) SUM_data[i].value[j];
+            } else { 
+                x = (float) SUM_data[i].value[j] ;
                 Printf("%g\t", x);
-            // }
+            }
         }
         Printf("\n");
     };
@@ -589,8 +655,6 @@ if (GEN25) {
     Printf("\n");
 }
 
-
-
 Printf("\nAcceleration (LIB_m_Gain)\nHEADER\tDATA\n");
 for( i = 0; i < DEFAULTS_Acceleration_length; i++ ) {
     Printf("%.2f", (float) Acceleration_Scale[i] / 32768 - 1);
@@ -640,8 +704,12 @@ for( i = 0; i < getIntegerSampleRate(Sample_Rate); i++ ) {
     Printf("\n");
 }
 */
-for (k = start;k < end; k += 2) {
-    checksum = checksum + ReadUShort(k);
+
+local int checksum = -1;
+for (j = start;j < end; j += 2) {
+    checksum = checksum + ReadUShort(j);
 }
 checksum = (checksum & 0xffff) ^ 0xffff;
-Printf("\nCHECKSUM: %.04X \n\n", SwapBytes(checksum) >> 16 & 0x0000ffff);  
+local int xls_checksum = Checksum(CHECKSUM_CRCCCITT, 64, 64, -1, -1); // algo, size, length, poly, init 
+Printf("\nXLS  CHECKSUM: %.04X", SwapBytes(xls_checksum) >> 16 & 0x0000ffff);  
+Printf("\nFILE CHECKSUM: %.04X", SwapBytes(checksum) >> 16 & 0x0000ffff);  
