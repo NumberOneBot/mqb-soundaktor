@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "jshashes": "^1.0.8",
+    "minimist": "^1.2.5",
+    "node-wav": "^0.0.2",
+    "polycrc": "^1.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.6.0"
+  }
+}
