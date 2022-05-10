@@ -1,4 +1,5 @@
 const fs = require('fs');
+const clc = require('cli-color');
 const argv = require('minimist')(process.argv.slice(2));
 
 if (!argv._.length) {
@@ -27,7 +28,7 @@ fs.readFile(filename, 'utf8', (err, data) => {
 					: hexData[i],
 				(err) => {
 					if (err) return console.log(err);
-					console.log(`\x1b[36m${blockFilename} created\x1b[0m`);
+					console.log(clc.cyan(`${blockFilename}`) + `\tcreated`);
 				}
 			);
 		}

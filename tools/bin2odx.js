@@ -1,15 +1,17 @@
 const fs = require('fs');
 const polycrc = require('polycrc');
+const clc = require('cli-color');
 const argv = require('minimist')(process.argv.slice(2));
 
 if (!argv._.length) {
-	console.log('No file name provided');
+	console.log(clc.red('No file name provided'));
 	return;
 }
 
 const {
 	_: [filename, newFilename = filename.replace('.odx', '.MODIFIED.odx')],
 	format = 'bin',
+	debug = false,
 } = argv;
 
 fs.readFile(filename, 'utf8', (err, data) => {
@@ -23,7 +25,8 @@ fs.readFile(filename, 'utf8', (err, data) => {
 		(val) => (crc32Data[val[2]] = { value: val[1], match: val[0] })
 	);
 
-	let writeFlag = false;
+	let writeFlag = false,
+		newCrc;
 	names
 		.filter((val) => val.indexOf('ERASE') === -1)
 		.map((val) => {
@@ -40,20 +43,21 @@ fs.readFile(filename, 'utf8', (err, data) => {
 				const newData = [...rawData].map((char) => char.toString(16).toUpperCase().padStart(2, '0')).join('');
 
 				if (originalData === newData) {
-					console.log(`\x1b[33m${val}.${format} block not changed\x1b[0m`);
+					console.log(clc.green(`${val}.${format}`) + `\tdidn't change`);
 				} else {
 					writeFlag = true;
 
 					const { value: originalCrc, match: originalCrcMatch } = crc32Data[val.replace('FD_', 'DB_')],
-						adlatusCalculator = polycrc.crc(32, 0x04c11db7, 0, 0, true), // size, poly, init, xorout, refin/refout
-						newCrc = adlatusCalculator(rawData).toString(16).toUpperCase().padStart(8, '0');
+						adlatusCalculator = polycrc.crc(32, 0x04c11db7, 0, 0, true); // size, poly, init, xorout, refin/refout
+					newCrc = adlatusCalculator(rawData).toString(16).toUpperCase().padStart(8, '0');
 
 					data = data.replace(originalData, newData);
 					data = data.replace(originalCrcMatch, originalCrcMatch.replace(originalCrc, newCrc));
-					console.log(`\x1b[32m${val}.${format} block was updated, new crc: ${newCrc}\x1b[0m`);
+					console.log(clc.yellow(`${val}.${format}`) + `\thas been modified`);
+					// block was updated, new crc: ${newCrc}\x1b[0m`);
 				}
 			} catch (e) {
-				console.log(`\x1b[31merror reading block ${val}.${format}\x1b[0m`);
+				console.log(clc.red(`error reading block ${val}.${format}`));
 				console.log(e);
 			}
 		});
@@ -61,8 +65,10 @@ fs.readFile(filename, 'utf8', (err, data) => {
 	if (writeFlag) {
 		fs.writeFile(newFilename, data, (err) => {
 			if (err) return console.log(err);
-
-			console.log(`\n\x1b[36m${newFilename} created\x1b[0m`);
+			if (debug) {
+				console.log(clc.magenta(`odx  checksum\t${newCrc}`));
+			}
+			console.log(clc.cyan(`${newFilename}`) + ' created');
 		});
 	}
 });
