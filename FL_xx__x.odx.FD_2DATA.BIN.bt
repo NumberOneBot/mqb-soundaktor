@@ -536,7 +536,7 @@ if (GEN25) {
     // WORK IN PROGRESS
     // WORK IN PROGRESS
 }
-/*
+
 PrintHeader("Gain_Effect (ST/TS_Gain)");
 for ( j = 0; j < DEFAULTS_Effects; j++ ) {
     for( i = 0; i < Profiles; i++ ) {
