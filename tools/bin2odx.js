@@ -51,17 +51,17 @@ fs.readFile(filename, 'utf8', (err, data) => {
 				let newData = [...rawData].map((char) => prettify(char, 2)).join('');
 
 				if (originalData === newData) {
-					console.log(clc.green(`${val}.${format}`).padEnd(14) + ` didn't change`);
+					console.log(clc.green((val + '.' + format).padEnd(14)) + ` didn't change`);
 				} else {
 					writeFlag = true;
-					console.log(clc.yellow(`${val}.${format}`).padEnd(14) + ` has been modified`);
+					console.log(clc.yellow((val + '.' + format).padEnd(14)) + ` has been modified`);
 
 					if (rawData.length === DATA02length || rawData.length === DATA02length25) {
 						if (debug) {
 							if (rawData.length === DATA02length) {
-								console.log(clc.magenta('GEN2 firmware'));
+								console.log(clc.magenta(`GEN2 firmware`));
 							} else {
-								console.log(clc.magenta('GEN2.5 firmware'));
+								console.log(clc.magenta(`GEN2.5 firmware`));
 							}
 						}
 						const xlsBinName = rawData.slice(64, 128),
@@ -87,8 +87,8 @@ fs.readFile(filename, 'utf8', (err, data) => {
 						// construct new hex data for ODX container
 						newData = fileCrc + newData.slice(4, rawData.length * 2);
 						if (debug) {
-							console.log(clc.magenta(`name checksum  ${xlsCrc}`));
-							console.log(clc.magenta(`file checksum  ${fileCrc}`));
+							console.log(clc.magenta(`NAME checksum  ${xlsCrc}`));
+							console.log(clc.magenta(`DATA checksum  ${fileCrc}`));
 						}
 					}
 
@@ -97,7 +97,7 @@ fs.readFile(filename, 'utf8', (err, data) => {
 						odxCrc = prettify(crc32Calculator(rawData), 8);
 
 					if (debug) {
-						console.log(clc.magenta(`odx  checksum  ${odxCrc}`));
+						console.log(clc.magenta(`ODX  checksum  ${odxCrc}`));
 					}
 
 					data = data.replace(originalData, newData);
