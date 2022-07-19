@@ -5,14 +5,14 @@
 //   Authors: Jille, Dark
 //   Version: 0.9.9
 //   Purpose: Parse the contents of the MQB soundaktor firmware
-//  Category:
-// File Mask:
-//  ID Bytes:
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
 //   History: 0.1 - Initial version
-//            0.2 - Additional field descriptions taken from MxCar sheet
+//            0.2 - Additional field descriptions taken from MxCar sheet   
 //            0.3.1 - 10 out of 12 tables mapped
-//            0.3.2 - Gain table key
-//            0.4 - Parsed and visualized all the tables found at this moment
+//            0.3.2 - Gain table key     
+//            0.4 - Parsed and visualized all the tables found at this moment 
 //            0.5 - Transposed some tables to be viewed in the right way
 //            0.6 - Added Lib_Sig (whatever it may be.. noise signature?)
 //            0.7 - template code cleanup, started GEN2.5 parsing
@@ -21,8 +21,9 @@
 //            0.9.1 - several more table params for GEN2.5
 //            0.9.8 - parsed and printed everything except SUM_DATA and MX_PROFILE
 //            0.9.9 - MX_Profile parsed
+//            1.0 - more GEN2.5 Car / MX Profile options parsed
 //------------------------------------------------
-// legend:
+// legend: 
 // yellow/aqua = uncertain
 // red         = checksum
 // green       = confirmed
@@ -46,23 +47,23 @@ if (GEN25) {
 
 string getFilterProperties(int filterSetting) {
    switch (filterSetting) {
-        case 0x00: return "no filter";    
+        case 0x00: return "No";     
         case 0x01: return "50Hz/6dB";      
-        case 0x02: return "100Hz/6dB";    
+        case 0x02: return "100Hz/6dB";     
         case 0x03: return "150Hz/6dB";
-        case 0x04: return "200Hz/6dB";    
-        case 0x05: return "250Hz/6dB";    
-        case 0x06: return "300Hz/6dB";
-        case 0x07: return "350Hz/6dB";    
-        case 0x08: return "400Hz/6dB";    
-        case 0x09: return "450Hz/6dB";
-        case 0x0A: return "50Hz/12dB";    
+        case 0x04: return "200Hz/6dB";     
+        case 0x05: return "250Hz/6dB";     
+        case 0x06: return "300Hz/6dB"; 
+        case 0x07: return "350Hz/6dB";     
+        case 0x08: return "400Hz/6dB";     
+        case 0x09: return "450Hz/6dB"; 
+        case 0x0A: return "50Hz/12dB";     
         case 0x0B: return "100Hz/12dB";    
-        case 0x0C: return "150Hz/12dB";
-        case 0x0D: return "200Hz/12dB";
+        case 0x0C: return "150Hz/12dB"; 
+        case 0x0D: return "200Hz/12dB"; 
         case 0x0E: return "250Hz/12dB";    
-        case 0x0F: return "300Hz/12dB";
-        case 0x10: return "350Hz/12dB";
+        case 0x0F: return "300Hz/12dB"; 
+        case 0x10: return "350Hz/12dB"; 
         case 0x11: return "400Hz/12dB";    
         case 0x12: return "450Hz/12dB";
         default:   return "Unknown";
@@ -71,26 +72,26 @@ string getFilterProperties(int filterSetting) {
 
 string getSampleRate(int sampleRate) {
     switch (sampleRate) {
-        case 0: return "512";
-        case 1: return "1024";
-        case 2: return "2048";
-        case 3: return "4096";
-        case 4: return "8192";
-        case 5: return "16384";
-        case 6: return "32768";
+        case 0: return "512";    
+        case 1: return "1024";    
+        case 2: return "2048";    
+        case 3: return "4096";   
+        case 4: return "8192";    
+        case 5: return "16384";    
+        case 6: return "32768";    
         default:return "Unknown";
     }
 }
 
 int getIntegerSampleRate(int sampleRate) {
     switch (sampleRate) {
-        case 0: return 512;
-        case 1: return 1024;
-        case 2: return 2048;
-        case 3: return 4096;
-        case 4: return 8192;
-        case 5: return 16384;
-        case 6: return 32768;
+        case 0: return 512;    
+        case 1: return 1024;    
+        case 2: return 2048;    
+        case 3: return 4096;   
+        case 4: return 8192;    
+        case 5: return 16384;    
+        case 6: return 32768;    
         default:return 0;
     }
 }
@@ -114,13 +115,13 @@ string getSumEffect(int effectNumber) {
 
 LittleEndian();
 
-ushort file_checksum <bgcolor=cRed>; //some kind of checksum?
-byte unknown_2 <bgcolor=cDkYellow>;
+ushort file_checksum <bgcolor=cRed>; //some kind of checksum? 
+byte unknown_2 <bgcolor=cDkYellow>; 
 byte Gain_table_flag <bgcolor=cYellow>;
 
-ushort DEFAULTS_Profiles <bgcolor=cDkAqua>;
+ushort DEFAULTS_Profiles <bgcolor=cDkAqua>; 
 if (!GEN25) {
-    ushort DEFAULTS_Effects <bgcolor=cAqua>;
+    ushort DEFAULTS_Effects <bgcolor=cAqua>; 
 } else {
     local int DEFAULTS_Effects = 16;
 }
@@ -159,11 +160,11 @@ if (GEN25) {
     ushort unknown_17 <bgcolor=cDkYellow>;
     ushort unknown_18 <bgcolor=cYellow>;
 } else {
-    // the following 2 values are linked to SampleRate
+    // the following 2 values are linked to SampleRate 
     // Depending on the value there, the values here are different.
     ushort DEFAULTS_Samples_count <bgcolor=cYellow>; // LIB_Sig
     ushort DEFAULTS_Sample_length <bgcolor=cDkYellow>;   // LIB_Sig
-    ushort DEFAULTS_Damping_factor <bgcolor=cYellow>; // Range 0-65535
+    ushort DEFAULTS_Damping_factor <bgcolor=cYellow>; // Range 0-65535 
 }
 
 // Offset where the filename starts.
@@ -171,20 +172,20 @@ FSeek(62);
 ushort source_filename_checksum <bgcolor=cRed>;// CRC16-CCITT
 char source_filename[64] <bgcolor=cDkGreen>;
 
-ushort Profiles <bgcolor=cDkAqua>;
+ushort Profiles <bgcolor=cDkAqua>; 
 ushort RevsFunctions <bgcolor=cAqua>;
-ushort AccelFunctions <bgcolor=cDkAqua>;
+ushort AccelFunctions <bgcolor=cDkAqua>; 
 ushort SpeedFunctions <bgcolor=cAqua>;
 
 if (!GEN25) {
-    ushort Samples_count <bgcolor=cDkAqua>;
+    ushort Samples_count <bgcolor=cDkAqua>; 
     ushort Sample_Rate <bgcolor=cAqua, read=getSampleRate>;
     ushort Damping_factor <bgcolor=cDkAqua>; // 0 <= DF <= 1 Quantization 0-65535
     // they refer to it as initial speed value in GEN2 ???? (always set to 0!)
     ushort InitialSpeedValue <bgcolor=cAqua>; // should be 0 in most cases, some electric cars have reversed value of 32768
 } else {
 
-    ushort PedalFunctions <bgcolor=cDkAqua>;
+    ushort PedalFunctions <bgcolor=cDkAqua>; 
     ushort Samples_count <bgcolor=cAqua>;
     ushort Sample_Rate <bgcolor=cDkAqua, read=getSampleRate>;
     ushort unknown_22 <bgcolor=cAqua>;
@@ -205,28 +206,28 @@ if (!GEN25) {
     struct {
         ubyte Engine_code <bgcolor=cDkGreen>;
         char VIN_mask[17] <bgcolor=cGreen>;
-        ubyte Charisma_01_Switch_Relapse_Clamp15 <bgcolor=cDkGreen>;
+        ubyte Charisma_01_Switch_Relapse_Clamp15 <bgcolor=cDkGreen>;   
         ubyte Charisma_02_Switch_Gearbox <bgcolor=cGreen>;
         ubyte Charisma_03_Default_driving_profile <bgcolor=cDkGreen>;
         ubyte Charisma_04_Reverse_driving_profile <bgcolor=cGreen>;
         ubyte Charisma_05_Comfort_driving_profile <bgcolor=cDkGreen>;
         ubyte Charisma_06_Normal_driving_profile <bgcolor=cGreen>;
         ubyte Charisma_07_Sport_driving_profile <bgcolor=cDkGreen>;
-        ubyte Charisma_08_Offroad_driving_profile <bgcolor=cGreen>;
+        ubyte Charisma_08_Offroad_driving_profile <bgcolor=cGreen>; 
         ubyte Charisma_09_Eco_driving_profile <bgcolor=cDkGreen>;
         ubyte Charisma_10_Race_driving_profile  <bgcolor=cGreen>;
         ubyte Charisma_11_GTE_driving_profile  <bgcolor=cDkGreen>;
-        ubyte HighPass_filter <bgcolor=cGreen, read=getFilterProperties>;
-        ubyte Reserved_for_future_use_2 <bgcolor=cDkYellow>;
+        ubyte HighPass_filter <bgcolor=cGreen, read=getFilterProperties>;  
+        ubyte Reserved_for_future_use_2 <bgcolor=cDkYellow>;  
         ubyte PHEV_button_led_bits <bgcolor=cYellow>; // 335 only
-    } Car[Profiles];
-
+    } Car[Profiles];                                    
+    
     // Engine codes
-
-    // 06 - high-perf 2.0l diesel engine? CUNA / CUPA / CUBA 190hp+
-    // 07 - mid-perf DFGA (could cover DFE also, maybe CRL too) Kodiaq 150hp 2.0l diesel
+    
+    // 06 - high-perf 2.0l diesel engine? CUNA / CUPA / CUBA 190hp+ 
+    // 07 - mid-perf DFGA (could cover DFE also, maybe CRL too) Kodiaq 150hp 2.0l diesel 
     // 0C - CEPA / CZGB 2.5l I5 engine
-    // 17 - DAZA 2.5l 340+hp
+    // 17 - DAZA 2.5l 340+hp 
     // 29 - MLB-version of high-perf 2.0l
     // 2B - CJX 2.0l 220+hp GTI, S3, SQ2, etc
     // 2A - CJS 1.8 Leon FR 170+hp
@@ -235,11 +236,11 @@ if (!GEN25) {
     // 32 - Passat PHEV / Tiguan PHEV, 2.0l maybe?
     // 13 - CUK 1.4TSI GTE, Bora / Lavida / Golf
     // 14 - old-school A4 diesels 2.0l / 2.7l / 3.0l
-    // 2D - A6 diesel ?
-    // 48 - CWGD / DLZA V6 3.0l 350hp S4
+    // 2D - A6 diesel ? 
+    // 48 - CWGD / DLZA V6 3.0l 350hp S4 
     // 49 - DECA / DKMB V6 2.9l 450hp RS4 / RS5
     // 5A - ???
-    // 3F - ANY
+    // 3F - ANY 
     // D5 - S3 8Y
     // E4 - S3 8Y
     // D8 - Urus V8
@@ -247,10 +248,10 @@ if (!GEN25) {
 
     struct { // ST_Gain
         ushort value[DEFAULTS_Effects];
-    } Gain_Effect[Profiles] <bgcolor=cDkGreen, optimize=true>;
+    } Gain_Effect[Profiles] <bgcolor=cDkGreen, optimize=true>; 
     struct { // ST_Phase
         ushort value[DEFAULTS_Effects];
-    } Phase_Effect[Profiles] <bgcolor=cGreen, optimize=true>;
+    } Phase_Effect[Profiles] <bgcolor=cGreen, optimize=true>; 
     struct { // ST_Pitch_Shift
         ushort value[DEFAULTS_Effects];
     } Pitch_Shift_Effect[Profiles] <bgcolor=cDkGreen, optimize=true>;
@@ -280,30 +281,30 @@ if (!GEN25) {
     } Effects_to_Samples <bgcolor=cDkGreen>;
     ushort Acceleration_Scale[DEFAULTS_Acceleration_length] <bgcolor=cGreen>; // values in [-0.3 - 0.98] range (5F 0003 fw) / [-0.4 - 1.00] range (565 AGA fw)
     ushort Revolutions_Scale[DEFAULTS_Revolutions_length] <bgcolor=cDkGreen>; // values in [500 - 8150] (rpm) range quanified by 16256
-    ushort Speed_Scale[DEFAULTS_Speed_length] <bgcolor=cGreen>; // values in [0 - 326.39] (km/h) range
+    ushort Speed_Scale[DEFAULTS_Speed_length] <bgcolor=cGreen>; // values in [0 - 326.39] (km/h) range	
     struct { // LIB_m_Gain
-        ushort value[DEFAULTS_Acceleration_length];
+        ushort value[DEFAULTS_Acceleration_length]; 
     } Acceleration[AccelFunctions] <bgcolor=cDkGreen, optimize=true>;
     struct { // LIB_n_Gain
-        ushort value[DEFAULTS_Revolutions_length];
-    } Revolutions[RevsFunctions] <bgcolor=cGreen, optimize=true>;
+        ushort value[DEFAULTS_Revolutions_length]; 
+    } Revolutions[RevsFunctions] <bgcolor=cGreen, optimize=true>; 
     struct { // LIB_v_Gain
-        ushort value[DEFAULTS_Speed_length];
+        ushort value[DEFAULTS_Speed_length]; 
     } Speed[SpeedFunctions] <bgcolor=cDkGreen, optimize=true>;
     struct { // LIB_Sig
         short value[getIntegerSampleRate(Sample_Rate)];
-    } Samples[Samples_count] <bgcolor=cDkAqua, optimize=true>;
-
-    // Print a report to output
-    Printf("ID\tEngine\tVIN\t\tRelapseKl15\tGearbox\tDefault\tReverse\tComfort(1)\tNormal(2)\tSport(3)\tOffroad(4)\tEco(5)\tRace(6)\tHybrid(8)\tHighPass\tRFU2\tRFU3\t\n");
+    } Samples[Samples_count] <bgcolor=cDkAqua, optimize=true>; 
+        
+    // Print a report to output 
+    Printf("ID\tEngine\tVIN\t\tRelapseKl15\tGearbox\tDefault\tReverse\tComfort(1)\tNormal(2)\tSport(3)\tOffroad(4)\tEco(5)\tRace(6)\tHybrid(8)\tHighPassFtr\tRFU2\tRFU3\t\n");
     for( i = 0; i < Profiles; i++ ) {
-        Printf("%i\t%02X\t%s\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%s\t%i\t%i\n",
-            i+1,
-            Car[i].Engine_code,
-            Car[i].VIN_mask,
-            Car[i].Charisma_01_Switch_Relapse_Clamp15,
-            Car[i].Charisma_02_Switch_Gearbox,
-            Car[i].Charisma_03_Default_driving_profile + 1,// these all need +1 for some reason, unless it's 255
+        Printf("%i\t%02X\t%s\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i\t%s\t%i\t%i\n", 
+            i+1, 
+            Car[i].Engine_code, 
+            Car[i].VIN_mask, 
+            Car[i].Charisma_01_Switch_Relapse_Clamp15, 
+            Car[i].Charisma_02_Switch_Gearbox, 
+            Car[i].Charisma_03_Default_driving_profile + 1,// these all need +1 for some reason, unless it's 255 
             Car[i].Charisma_04_Reverse_driving_profile + 1,
             Car[i].Charisma_05_Comfort_driving_profile + 1,
             Car[i].Charisma_06_Normal_driving_profile + 1,
@@ -316,7 +317,7 @@ if (!GEN25) {
             Car[i].Reserved_for_future_use_2,
             Car[i].PHEV_button_led_bits
         );
-    }
+    } 		
 } else if (GEN25) {
     Printf("GEN2.5 firmware\n\n");
 
@@ -331,14 +332,20 @@ if (!GEN25) {
         ubyte unknown_2 <bgcolor=cDkYellow>; // car Class / Group
         ubyte Engine_code <bgcolor=cDkGreen>;
         char VIN_mask[17] <bgcolor=cGreen>;
-        char Transmission <bgcolor=cDkGreen>;
+        char Transmission <bgcolor=cDkGreen>;   
+        // A - Auto 
+        // H - Hybrid ???
         char BodyType <bgcolor=cGreen>;
+        // G - ???
+        // O - Cabrio / Open Roof
         char Drivetrain <bgcolor=cDkGreen>;
-        char FPA_installed <bgcolor=cGreen>;
+        // V - All-wheel drive ???
+        // H - Hybrid
+        char FPA_installed <bgcolor=cGreen>;   
         ubyte unknown_25 <bgcolor=cDkYellow>;
-        ubyte unknown_26 <bgcolor=cYellow>;
-    } Car[Profiles];
-
+        ubyte unknown_26 <bgcolor=cYellow>; // Priority ???
+    } Car[Profiles];  
+    
     // local int MXP_y = 32;
     // local int MXP_x = 12;
     local int SUM_x = 14; // 19
@@ -348,10 +355,10 @@ if (!GEN25) {
 
     // struct {
     //     ubyte unknown[MXP_x];
-    // }
+    // } 
     ubyte MX_Profile[384] <bgcolor=cDkAqua, optimize=true>;
     struct {
-        ushort value[SUM_x]; // there is NO parameter with such a value and sometimes it is 19 !!!!
+        ushort value[SUM_x]; // there is NO parameter with such a value and sometimes it is 19 !!!! 
     } SUM_data[Profiles] <bgcolor=cAqua, optimize=true>;
     struct {
         ushort value[DEFAULTS_Effects];
@@ -369,20 +376,20 @@ if (!GEN25) {
         ubyte value[DEFAULTS_Effects];
     } Effects_to_Revs[Profiles] <bgcolor=cDkGreen, optimize=true>;
     ushort Revolutions_Scale[DEFAULTS_Revolutions_length] <bgcolor=cGreen>; // values in [500 - 8150] (rpm) range quanified by 16256
-    struct { // LIB_n_Gain
-        ushort value[DEFAULTS_Revolutions_length];
-    } Revolutions[RevsFunctions] <bgcolor=cDkGreen, optimize=true>;
+    struct { // LIB_n_Gain 
+        ushort value[DEFAULTS_Revolutions_length]; 
+    } Revolutions[RevsFunctions] <bgcolor=cDkGreen, optimize=true>; 
     struct {
         ubyte value[DEFAULTS_Effects];
     } Effects_to_Accel[Profiles] <bgcolor=cGreen, optimize=true>;
-    ushort Acceleration_Scale[DEFAULTS_Acceleration_length] <bgcolor=cDkGreen>; // values in [-0.5 - 1.00] range, acceleration
+    ushort Acceleration_Scale[DEFAULTS_Acceleration_length] <bgcolor=cDkGreen>; // values in [-0.5 - 1.00] range, acceleration 
     struct { // LIB_m_Gain
         ushort value[DEFAULTS_Acceleration_length];
     } Acceleration[AccelFunctions] <bgcolor=cGreen, optimize=true>;
     struct {
         ubyte value[DEFAULTS_Effects];
     } Effects_to_Speed[Profiles] <bgcolor=cDkGreen, optimize=true>;
-    ushort Speed_Scale[DEFAULTS_Speed_length] <bgcolor=cGreen>; // values in [0 - 326.39] (km/h) range
+    ushort Speed_Scale[DEFAULTS_Speed_length] <bgcolor=cGreen>; // values in [0 - 326.39] (km/h) range	
     struct { // LIB_v_Gain
         ushort value[DEFAULTS_Speed_length];
     } Speed[SpeedFunctions] <bgcolor=cDkGreen, optimize=true>;
@@ -398,26 +405,26 @@ if (!GEN25) {
     } Effects_to_Samples[Profiles] <bgcolor=cDkGreen, optimize=true>;
     struct { // LIB_Sig
         short value[getIntegerSampleRate(Sample_Rate)];
-    } Samples[Samples_count] <bgcolor=cDkAqua, optimize=true>;
+    } Samples[Samples_count] <bgcolor=cDkAqua, optimize=true>; 
 
-    // Print a report to output
+    // Print a report to output 
     Printf("CAR\n");
     Printf("ID\tPower kW\tunknown_2\tEngine\tVIN\t\tTransmissn\tBody Type\tDrivetrain\tFPA Flag\tunknown_25\tunknown_26\n");
     for( i = 0; i < Profiles; i++ ) {
-        Printf("%i\t%i\t%i\t%02X\t%s\t%s\t%s\t%s\t%s\t%i\t%i\n",
-            i + 1,
+        Printf("%i\t%i\t%i\t%02X\t%s\t%s\t%s\t%s\t%s\t%i\t%i\n", 
+            i + 1, 
             Car[i].Power_kW == 63 ? 0 : Car[i].Power_kW,
-            Car[i].unknown_2,
-            Car[i].Engine_code,
-            Car[i].VIN_mask,
-            Car[i].Transmission,
-            Car[i].BodyType,
+            Car[i].unknown_2, 
+            Car[i].Engine_code, 
+            Car[i].VIN_mask, 
+            Car[i].Transmission, 
+            Car[i].BodyType, 
             Car[i].Drivetrain,
             (Car[i].FPA_installed == 'J' ? "Yes" : Car[i].FPA_installed == 'N' ? "No" : "Any"),
             Car[i].unknown_25,
             Car[i].unknown_26
         );
-    }
+    } 	
 }
 
 // FUNCTIONS
@@ -432,11 +439,11 @@ void PrintHeader( char name[] ) {
 
 ubyte get2HalfByte(ubyte source) {
     return source >> 4;
-}
+} 
 
 ubyte get1HalfByte(ubyte source) {
     return source & 0x0F;
-}
+} 
 
 
 
@@ -445,11 +452,12 @@ if (GEN25) {
     // WORK IN PROGRESS
     // WORK IN PROGRESS
     // WORK IN PROGRESS
-
+    
     local int schema_type_byte_position = (Gain_table_flag == 3 ? 4 : 2);
     local int original_line_length = schema_type_byte_position + 4;
     local int current_line_length = original_line_length;
     local int line_counter = 0;
+    local int profile = 0;
     j = 0;
     i = 0;
 
@@ -470,33 +478,55 @@ if (GEN25) {
         }
         j++;
         if (j == schema_type_byte_position && MX_Profile[i] > 0) {
-            current_line_length +=4;
+            current_line_length +=4;    
         }
 
         if ( j == schema_type_byte_position ) {
-            if (MX_Profile[i] == 0) {
-                Printf("B\t");
-            } else if (MX_Profile[i] == 8) {
-                Printf("BK\t");
+            profile = get1HalfByte(MX_Profile[i]);
+            // if (profile > 127) {
+            //    profile = 255 - profile;
+            //    Printf("-");
+            // }   
+
+            if (profile == 0) {
+                Printf("0 B\t");
+            } else if (profile == 1) {
+                Printf("1 M\t");
+            } else if (profile == 2) {
+                Printf("2 H\t");
+            } else if (profile == 3) {
+                Printf("3 HM\t");
+            } else if (profile == 4) {
+                Printf("4 C\t");
+            } else if (profile == 5) {
+                Printf("5 CM\t");
+            } else if (profile == 6) {
+                Printf("6 CH\t");
+            } else if (profile == 7) {
+                Printf("7 CHM\t");
+            } else if (profile == 8) {
+                Printf("8 BK\t");
             } else {
-                Printf("(%i) unknown\t", MX_Profile[i]);
+                Printf("%i unkwn\t", profile);
             }
         } else {
             if ( j < schema_type_byte_position ) {
-                Printf("( %02i  %02i ) \t", get1HalfByte(MX_Profile[i]), get2HalfByte(MX_Profile[i]) );
+                Printf("( %02i  %02i ) \t", get1HalfByte(MX_Profile[i]), get2HalfByte(MX_Profile[i]) );            
             } else {
-                if ( j == schema_type_byte_position + 1 ||
-                     j == schema_type_byte_position + 5
+                if ( j == schema_type_byte_position + 1 || 
+                     j == schema_type_byte_position + 5 || 
+                     j == schema_type_byte_position + 9  
                 ) {
-                    Printf("[ ");
+                    Printf("[ ");        
                 }
-                if ( j == schema_type_byte_position + 4 ||
-                     j == schema_type_byte_position + 8
+                if ( j == schema_type_byte_position + 4 || 
+                     j == schema_type_byte_position + 8 || 
+                     j == schema_type_byte_position + 12  
                 ) {
-                    Printf("%i\t]\t", get1HalfByte(MX_Profile[i]) + 1); // skip 8th unused half-byte
+                    Printf("%i\t]\t", get1HalfByte(MX_Profile[i]) + 1); // skip 8th unused half-byte            
                 } else {
-                    Printf("%i\t  %i\t  ", get1HalfByte(MX_Profile[i]) + 1, get2HalfByte(MX_Profile[i]) + 1);
-                }
+                    Printf("%i\t  %i\t  ", get1HalfByte(MX_Profile[i]) + 1, get2HalfByte(MX_Profile[i]) + 1);            
+                }                
 
             }
         }
@@ -505,11 +535,13 @@ if (GEN25) {
             Printf("\n");
             line_counter++;
             j = 0;
-            current_line_length = original_line_length;
+            current_line_length = original_line_length;    
         }
         i++;
     } while (line_counter < 8);
-
+    Printf("%i bytes length\n", i);
+    
+    /*
     // WORK IN PROGRESS
     // WORK IN PROGRESS
     // WORK IN PROGRESS
@@ -525,7 +557,7 @@ if (GEN25) {
             } else if (j == SUM_x-1) {
                 x = (float) SUM_data[i].value[j] / 2048 * 8;
                 Printf("%.2g\t", x);
-            } else {
+            } else { 
                 x = (float) SUM_data[i].value[j] ;
                 Printf("%g\t", x);
             }
@@ -535,8 +567,9 @@ if (GEN25) {
     // WORK IN PROGRESS
     // WORK IN PROGRESS
     // WORK IN PROGRESS
+    */
 }
-
+/*
 PrintHeader("Gain_Effect (ST/TS_Gain)");
 for ( j = 0; j < DEFAULTS_Effects; j++ ) {
     for( i = 0; i < Profiles; i++ ) {
@@ -545,8 +578,8 @@ for ( j = 0; j < DEFAULTS_Effects; j++ ) {
             Printf("%.3g\t", x);
         } else {
             // there is definitelly a rounding issue exists
-            // trying to compensate it with 1.006 multiplier
-            x = (float) Gain_Effect[i].value[j] * 1.006 / 16;
+            // trying to compensate it with 1.0058 multiplier
+            x = (float) Gain_Effect[i].value[j] * 1.0058 / 16;
             Printf("%.4g°\t", x);
         }
     }
@@ -569,8 +602,8 @@ PrintHeader("Pitch_Shift_Effect (ST/TS_Pitch-Shift)");
 for ( j = 0; j < DEFAULTS_Effects; j++ ) {
     for( i = 0; i < Profiles; i++ ) {
         x = (float) Pitch_Shift_Effect[i].value[j] / 0xffff;
-        if (GEN25) {
-            x *= 1.4265; // FMax value
+        if (GEN25) { 
+            x *= 1.4265; // FMax value 
         }
         Printf("%.3g\t", x);
     }
@@ -581,7 +614,7 @@ PrintHeader("Delay_Effect (ST/TS_Delay)");
 for ( j = 0; j < DEFAULTS_Effects; j++ ) {
     for( i = 0; i < Profiles; i++ ) {
         x = (float) Delay_Effect[i].value[j] / 0xffff;
-        if (GEN25) {
+        if (GEN25) { 
             x *= 0.01024; // 0.005 / 65536
         }
         Printf("%.2g\t", x);
@@ -597,7 +630,7 @@ for ( j = 0; j < DEFAULTS_Effects; j++ ) {
         Printf("%i\t", Effects_to_Accel[i].value[j] + 1); // not sure do we need this +1
     }
     Printf("\n");
-};
+};			 
 
 PrintHeader("Effects_to_Revs (MX_n_Gain)");
 for ( j = 0; j < DEFAULTS_Effects; j++ ) {
@@ -605,7 +638,7 @@ for ( j = 0; j < DEFAULTS_Effects; j++ ) {
         Printf("%i\t", Effects_to_Revs[i].value[j] + 1); // not sure do we need this +1
     }
     Printf("\n");
-};
+};			 
 
 PrintHeader("Effects_to_Speed (MX_v_Gain)");
 for ( j = 0; j < DEFAULTS_Effects; j++ ) {
@@ -613,7 +646,7 @@ for ( j = 0; j < DEFAULTS_Effects; j++ ) {
         Printf("%i\t", Effects_to_Speed[i].value[j] + 1); // not sure do we need this +1
     }
     Printf("\n");
-};
+};			 
 
 if (GEN25) {
     PrintHeader("Effects_to_Pedal (MX_p_Gain)");
@@ -622,7 +655,7 @@ if (GEN25) {
             Printf("%i\t", Effects_to_Pedal[i].value[j] + 1); // not sure do we need this +1
         }
         Printf("\n");
-    };
+    };			 
 
     PrintHeader("Effects_to_Samples (MX_Sig)");
     for ( j = 0; j < DEFAULTS_Effects; j++ ) {
@@ -630,7 +663,7 @@ if (GEN25) {
             Printf("%i\t", Effects_to_Samples[i].value[j] + 1); // not sure do we need this +1
         }
         Printf("\n");
-    };
+    };			 
 } else {
     if (Gain_table_flag > 0) {
         PrintHeader("Effects_to_Profiles");
@@ -639,19 +672,19 @@ if (GEN25) {
                 Printf("%i\t", Effects_to_Profiles[i].value[j] + 1); // not sure do we need this +1
             }
             Printf("\n");
-        };
+        };			 
     }
 
     PrintHeader("Effects_to_Samples (MX_Sig)");
     for ( j = 0; j < 8; j++ ) {
         Printf("%.3g\t", (float) Effects_to_Samples.gain[j] / 0xffff * 2); // 0 < X < 1 // Q:65536
     }
-    Printf("GAIN");
+    Printf("GAIN");   
     Printf("\n");
     for ( j = 0; j < 8; j++ ) {
         Printf("%.3g\t", (float) Effects_to_Samples.clip[j] / 0xffff * 512); // 0 < X < 8 // Q:65536
     }
-    Printf("CLIP");
+    Printf("CLIP");   
     Printf("\n");
 }
 
@@ -672,7 +705,7 @@ for( i = 0; i < DEFAULTS_Revolutions_length; i++ ) {
     }
     Printf("\n");
 }
-/*
+
 Printf("\nSpeed (LIB_v_Gain)\nHEADER\tDATA\n");
 for( i = 0; i < DEFAULTS_Speed_length; i++ ) {
     // real scale for this header column is the percentage [0 - 100%] from 326.39 value
@@ -710,6 +743,6 @@ for (j = start;j < end; j += 2) {
     checksum = checksum + ReadUShort(j);
 }
 checksum = (checksum & 0xffff) ^ 0xffff;
-local int xls_checksum = Checksum(CHECKSUM_CRCCCITT, 64, 64, -1, -1); // algo, size, length, poly, init
-Printf("\nXLS  CHECKSUM: %.04X", SwapBytes(xls_checksum) >> 16 & 0x0000ffff);
-Printf("\nFILE CHECKSUM: %.04X", SwapBytes(checksum) >> 16 & 0x0000ffff);
+local int name_checksum = Checksum(CHECKSUM_CRCCCITT, 64, 64, -1, -1); // algo, size, length, poly, init 
+Printf("\nFILE CHECKSUM: %.04X", SwapBytes(checksum) >> 16 & 0x0000ffff);  
+Printf("\nNAME CHECKSUM: %.04X", SwapBytes(name_checksum) >> 16 & 0x0000ffff);  

@@ -18,8 +18,8 @@ const byteSwap = (str) => str.slice(2, 4) + str.slice(0, 2);
 const prettify = (value, length = 4) => value.toString(16).toUpperCase().padStart(length, '0');
 const DATA02length = 0xe000;
 const DATA02length25 = 0x18000;
-const crc32Calculator = polycrc.crc(32, 0x04c11db7, 0, 0, true), // size, poly, init, xorout, refin/refout
-	crc16Calculator = polycrc.crc(16, 0x1021, 0xffff, 0, false); // size, poly, init, xorout, refin/refout
+const crc32Calculator = polycrc.crc(32, 0x04c11db7, 0, 0, true); //   size, poly, init, xorout, refin/refout
+const crc16Calculator = polycrc.crc(16, 0x1021, 0xffff, 0, false); // size, poly, init, xorout, refin/refout
 
 fs.readFile(filename, 'utf8', (err, data) => {
 	if (err) return console.log(err);
@@ -57,13 +57,6 @@ fs.readFile(filename, 'utf8', (err, data) => {
 					console.log(clc.yellow((val + '.' + format).padEnd(14)) + ` has been modified`);
 
 					if (rawData.length === DATA02length || rawData.length === DATA02length25) {
-						if (debug) {
-							if (rawData.length === DATA02length) {
-								console.log(clc.magenta(`GEN2 firmware`));
-							} else {
-								console.log(clc.magenta(`GEN2.5 firmware`));
-							}
-						}
 						const xlsBinName = rawData.slice(64, 128),
 							xlsCrc = byteSwap(prettify(crc16Calculator(xlsBinName), 4));
 						// inject new checksum into binary array
@@ -86,25 +79,30 @@ fs.readFile(filename, 'utf8', (err, data) => {
 						rawData[1] = parseInt(fileCrc.slice(2, 4), 16);
 						// construct new hex data for ODX container
 						newData = fileCrc + newData.slice(4, rawData.length * 2);
+
 						if (debug) {
-							console.log(clc.magenta(`NAME checksum  ${xlsCrc}`));
+							if (rawData.length === DATA02length) {
+								console.log(clc.magenta(`GEN2 firmware`));
+							} else {
+								console.log(clc.magenta(`GEN2.5 firmware`));
+							}
 							console.log(clc.magenta(`DATA checksum  ${fileCrc}`));
+							console.log(clc.magenta(`NAME checksum  ${xlsCrc}`));
 						}
 					}
 
 					const { value: originalCrc, match: originalCrcMatch } =
 							crc32Data[val.replace('FD_', 'DB_')],
 						odxCrc = prettify(crc32Calculator(rawData), 8);
-
-					if (debug) {
-						console.log(clc.magenta(`ODX  checksum  ${odxCrc}`));
-					}
-
 					data = data.replace(originalData, newData);
 					data = data.replace(
 						originalCrcMatch,
 						originalCrcMatch.replace(originalCrc, odxCrc),
 					);
+
+					if (debug) {
+						console.log(clc.magenta(`ODX  checksum  ${odxCrc}`));
+					}
 				}
 			} catch (e) {
 				console.log(clc.red(`error reading block ${val}.${format}`));
