@@ -343,7 +343,7 @@ if (!GEN25) {
         // H - Hybrid
         char FPA_installed <bgcolor=cGreen>;   
         ubyte unknown_25 <bgcolor=cDkYellow>;
-        ubyte unknown_26 <bgcolor=cYellow>; // Priority ???
+        ubyte MX_ID <bgcolor=cYellow>; // Priority ???
     } Car[Profiles];  
     
     // local int MXP_y = 32;
@@ -409,7 +409,7 @@ if (!GEN25) {
 
     // Print a report to output 
     Printf("CAR\n");
-    Printf("ID\tPower kW\tunknown_2\tEngine\tVIN\t\tTransmissn\tBody Type\tDrivetrain\tFPA Flag\tunknown_25\tunknown_26\n");
+    Printf("ID\tPower kW\tunknown_2\tEngine\tVIN\t\tTransmissn\tBody Type\tDrivetrain\tFPA Flag\tunknown_25\tMX ID\n");
     for( i = 0; i < Profiles; i++ ) {
         Printf("%i\t%i\t%i\t%02X\t%s\t%s\t%s\t%s\t%s\t%i\t%i\n", 
             i + 1, 
@@ -422,7 +422,7 @@ if (!GEN25) {
             Car[i].Drivetrain,
             (Car[i].FPA_installed == 'J' ? "Yes" : Car[i].FPA_installed == 'N' ? "No" : "Any"),
             Car[i].unknown_25,
-            Car[i].unknown_26
+            Car[i].MX_ID
         );
     } 	
 }
